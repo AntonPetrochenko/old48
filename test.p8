@@ -428,6 +428,103 @@ function m_player(x,y)
 	return p
 end
 
+function m_enemy(x,y)
+
+	--todo: refactor with m_vec.
+	local p=
+	{
+		x=x,
+		y=y,
+
+		dx=1,
+		dy=0,
+
+		w=8,
+		h=8,
+		
+		max_dx=1,--max x speed
+		max_dy=2,--max y speed
+		
+		--animation definitions.
+		--use with set_anim()
+		anims=
+		{
+			["stand"]=
+			{
+				ticks=1,--how long is each frame shown.
+				frames={2},--what frames are shown.
+			},
+			["walk"]=
+			{
+				ticks=5,
+				frames={3,4,5,6},
+			},
+		},
+
+		curanim="walk",--currently playing animation
+		curframe=1,--curent frame of animation.
+		animtick=0,--ticks until next frame should show.
+		flipx=false,--show sprite be flipped.
+		
+		--request new animation to play.
+		set_anim=function(self,anim)
+			if(anim==self.curanim)return--early out.
+			local a=self.anims[anim]
+			self.animtick=a.ticks--ticks count down.
+			self.curanim=anim
+			self.curframe=1
+		end,
+		
+		m_right = true,
+		--call once per tick.
+		update=function(self)
+		
+			--move in x
+			self.x+=self.dx
+			
+			if collide_side(self) then
+				sfx(0)
+				if self.m_right then
+					self.dx = 1
+					self.x += 4
+					self.flipx=false
+				else
+					self.dx = -1
+					self.x -= 4
+					self.flipx=true
+				end
+				self.m_right = not self.m_right
+			end
+
+			--anim tick
+			self.animtick-=1
+			if self.animtick<=0 then
+				self.curframe+=1
+				local a=self.anims[self.curanim]
+				self.animtick=a.ticks--reset timer
+				if self.curframe>#a.frames then
+					self.curframe=1--loop
+				end
+			end
+
+		end,
+
+		--draw the enemy
+		draw=function(self)
+			local a=self.anims[self.curanim]
+			local frame=a.frames[self.curframe]
+			spr(frame,
+				self.x-(self.w/2),
+				self.y-(self.h/2),
+				self.w/8,self.h/8,
+				self.flipx,
+				false)
+		end,
+	}
+
+	return p
+end
+
 --make the camera.
 function m_cam(target)
 	local c=
@@ -519,7 +616,9 @@ end
 function reset()
 	ticks=0
 	p1=m_player(64,100)
+	p2=m_enemy(80,100)
 	p1:set_anim("walk")
+	p2:set_anim("walk")
 	cam=m_cam(p1)
 end
 
@@ -533,6 +632,7 @@ end
 function _update60()
 	ticks+=1
 	p1:update()
+	p2:update()
 	cam:update()
 	--demo camera shake
 	if(btnp(4))cam:shake(15,2)
@@ -547,6 +647,8 @@ function _draw()
 	map(0,0,0,0,128,128)
 	
 	p1:draw()
+	
+	p2:draw()
 	
 	--hud
 	camera(0,0)
