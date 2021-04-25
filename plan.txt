@@ -1,11 +1,11 @@
 !- Drill
 !- Drillable blocks
 !- Drillable objects
-- Looping map
-- Looping object display
-- Generating map
+!- Looping map
+x- Looping object display (not required), replace with enemy despawning
+p- Generating map
 
-- Title screen
+?- Title screen
 - End screen
 
 - Level 2
