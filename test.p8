@@ -386,22 +386,22 @@ function m_player(x,y)
 			["stand"]=
 			{
 				ticks=1,--how long is each frame shown.
-				frames={2},--what frames are shown.
+				frames={1},--what frames are shown.
 			},
 			["walk"]=
 			{
 				ticks=5,
-				frames={3,4,5,6},
+				frames={2,3,4,5},
 			},
 			["jump"]=
 			{
 				ticks=1,
-				frames={1},
+				frames={2},
 			},
 			["slide"]=
 			{
 				ticks=1,
-				frames={7},
+				frames={2},
 			},
 		},
 
